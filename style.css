@@ -347,22 +347,25 @@ body {
   box-shadow: 0 3px 0 #1b4332;
 }
 
-/* On-screen Touch Controls */
+/* On-screen Touch Controls (Posicionada abaixo da tela do jogo) */
 #touch-controls {
-  position: absolute;
-  bottom: 14px;
-  left: 16px;
-  right: 16px;
+  width: 100%;
+  background: rgba(15, 32, 67, 0.72);
+  border: 3px solid rgba(255, 255, 255, 0.28);
+  border-radius: 20px;
+  padding: 12px 18px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  pointer-events: none;
   z-index: 6;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
   touch-action: none;
 }
 
 .touch-dpad,
 .touch-actions {
   display: flex;
+  align-items: center;
   gap: 12px;
   pointer-events: auto;
   touch-action: none;
@@ -372,47 +375,46 @@ body {
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.88);
-  background: rgba(2, 48, 71, 0.78);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  background: rgba(2, 48, 71, 0.88);
   color: #fff;
   font-size: 1.45rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.35), 0 6px 12px rgba(0, 0, 0, 0.35);
   touch-action: none;
+  transition: transform 0.08s ease;
 }
 
 .touch-btn:active {
-  transform: scale(0.92);
-  background: rgba(255, 183, 3, 0.9);
+  transform: translateY(2px) scale(0.94);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  background: rgba(255, 183, 3, 0.95);
 }
 
 .yarn-btn {
-  background: rgba(255, 77, 109, 0.82);
+  background: rgba(255, 77, 109, 0.9);
 }
 
 .dash-btn {
-  background: rgba(155, 93, 229, 0.82);
+  background: rgba(155, 93, 229, 0.9);
 }
 
 .jump-btn {
-  background: rgba(6, 214, 160, 0.85);
+  background: rgba(6, 214, 160, 0.92);
 }
 
-@media (min-width: 920px) and (min-height: 600px) {
+/* Em computadores com mouse/teclado, oculta a barra de botões touch para focar na tela */
+@media (min-width: 921px) and (min-height: 581px) and (hover: hover) and (pointer: fine) {
   #touch-controls {
-    opacity: 0.38;
-    transition: opacity 0.2s;
-  }
-  #touch-controls:hover {
-    opacity: 1;
+    display: none;
   }
 }
 
 /* ============================================================================
-   MODO CELULAR E TABLET (TELA CHEIA EM RETRATO E PAISAGEM)
+   MODO CELULAR E TABLET (TELA PROPORCIONAL + CONTROLES ABAIXO DA TELA)
    ============================================================================ */
 @media (max-width: 920px), (max-height: 580px) {
   html,
@@ -429,18 +431,24 @@ body {
     height: 100vh;
     height: 100dvh;
     max-width: none;
-    padding: 0;
-    gap: 0;
+    padding: 8px 8px 14px 8px;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
   }
 
   #hud {
-    border-radius: 0;
-    border-width: 0 0 3px 0;
-    padding: 5px 10px;
+    width: 100%;
+    border-radius: 14px;
+    border-width: 3px;
+    padding: 6px 10px;
     gap: 4px;
-    box-shadow: none;
+    box-shadow: 0 4px 0 #fb8500;
     flex-wrap: nowrap;
     justify-content: space-between;
+    flex-shrink: 0;
   }
 
   .hud-group {
@@ -474,15 +482,31 @@ body {
     box-shadow: 0 2px 0 #219ebc;
   }
 
+  /* Tela do jogo mantém proporção horizontal sem esticar verticalmente */
   #canvas-container {
-    flex: 1;
     width: 100%;
-    height: 100%;
-    min-height: 0;
-    aspect-ratio: auto;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    flex: 0 0 auto;
+    border: 3px solid #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  #boss-hud {
+    top: 8px;
+    width: 74%;
+    padding: 5px 10px;
+    border-radius: 12px;
+  }
+
+  .boss-title {
+    font-size: 0.8rem;
+    margin-bottom: 3px;
+  }
+
+  .boss-bar-bg {
+    height: 12px;
   }
 
   .overlay {
@@ -549,15 +573,57 @@ body {
     font-size: 1rem;
   }
 
+  /* Painel de botões dedicado abaixo da tela do jogo */
   #touch-controls {
-    bottom: 18px;
-    left: 14px;
-    right: 14px;
+    width: 100%;
+    padding: 16px 12px;
+    border-radius: 20px;
+    flex-shrink: 0;
+  }
+
+  .touch-dpad,
+  .touch-actions {
+    gap: 10px;
   }
 
   .touch-btn {
-    width: 64px;
-    height: 64px;
-    font-size: 1.6rem;
+    width: clamp(52px, 15vw, 64px);
+    height: clamp(52px, 15vw, 64px);
+    font-size: clamp(1.35rem, 4.5vw, 1.6rem);
+  }
+}
+
+/* Ajuste específico para Celular na Horizontal (Paisagem) */
+@media (max-height: 580px) and (orientation: landscape) {
+  #game-wrapper {
+    padding: 4px 10px 6px 10px;
+    gap: 5px;
+    justify-content: space-between;
+  }
+
+  #hud {
+    padding: 3px 10px;
+    border-radius: 10px;
+  }
+
+  #canvas-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 14px;
+  }
+
+  #touch-controls {
+    padding: 6px 14px;
+    border-radius: 14px;
+  }
+
+  .touch-btn {
+    width: 46px;
+    height: 46px;
+    font-size: 1.25rem;
   }
 }
