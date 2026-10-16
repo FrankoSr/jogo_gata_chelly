@@ -218,10 +218,86 @@ class SoundSystem {
     this.playTone(780, 'sawtooth', 0.11, 0.11, 180);
   }
 
-  meow() {
+  playKittenMeow(startDelay = 0, pitchScale = 1.0, duration = 0.42) {
     if (!this.enabled || !this.ctx) return;
-    this.playTone(550, 'triangle', 0.13, 0.14, 820);
-    setTimeout(() => this.playTone(820, 'triangle', 0.2, 0.13, 480), 115);
+    try {
+      const now = this.ctx.currentTime + startDelay;
+
+      // Oscilador principal (cordas vocais do gatinho) + harmônico suave
+      const osc1 = this.ctx.createOscillator();
+      const osc2 = this.ctx.createOscillator();
+      osc1.type = 'sawtooth';
+      osc2.type = 'triangle';
+
+      // Contorno de afinação do "M-i-a-u!" (sobe no "mi", sustenta no "a" e desce no "u")
+      const fStart = 580 * pitchScale;
+      const fPeak = 1180 * pitchScale;
+      const fMid = 960 * pitchScale;
+      const fEnd = 520 * pitchScale;
+
+      osc1.frequency.setValueAtTime(fStart, now);
+      osc1.frequency.exponentialRampToValueAtTime(fPeak, now + duration * 0.28);
+      osc1.frequency.exponentialRampToValueAtTime(fMid, now + duration * 0.62);
+      osc1.frequency.exponentialRampToValueAtTime(fEnd, now + duration);
+
+      osc2.frequency.setValueAtTime(fStart * 2, now);
+      osc2.frequency.exponentialRampToValueAtTime(fPeak * 2, now + duration * 0.28);
+      osc2.frequency.exponentialRampToValueAtTime(fMid * 2, now + duration * 0.62);
+      osc2.frequency.exponentialRampToValueAtTime(fEnd * 2, now + duration);
+
+      // Vibrato natural na voz do filhote
+      const lfo = this.ctx.createOscillator();
+      const lfoGain = this.ctx.createGain();
+      lfo.frequency.setValueAtTime(22, now);
+      lfoGain.gain.setValueAtTime(18 * pitchScale, now);
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc1.frequency);
+
+      // Filtro de Formante Vocal (simula a boquinha do gato abrindo "M -> I -> A -> U")
+      const formant = this.ctx.createBiquadFilter();
+      formant.type = 'bandpass';
+      formant.Q.setValueAtTime(2.8, now);
+      formant.frequency.setValueAtTime(650, now);
+      formant.frequency.exponentialRampToValueAtTime(2300, now + duration * 0.3);
+      formant.frequency.exponentialRampToValueAtTime(1450, now + duration * 0.68);
+      formant.frequency.exponentialRampToValueAtTime(720, now + duration);
+
+      // Envelope de volume suave
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.28, now + duration * 0.14);
+      gain.gain.setValueAtTime(0.26, now + duration * 0.55);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      osc1.connect(formant);
+      osc2.connect(formant);
+      formant.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc1.onended = () => {
+        osc1.disconnect();
+        osc2.disconnect();
+        lfo.disconnect();
+        lfoGain.disconnect();
+        formant.disconnect();
+        gain.disconnect();
+      };
+
+      lfo.start(now);
+      osc1.start(now);
+      osc2.start(now);
+      lfo.stop(now + duration);
+      osc1.stop(now + duration);
+      osc2.stop(now + duration);
+    } catch (e) {}
+  }
+
+  meow() {
+    this.init();
+    if (!this.enabled || !this.ctx) return;
+    // Miado duplo alegre de filhotinho ("Miau! Miaaau!")
+    this.playKittenMeow(0, 1.12, 0.24);
+    this.playKittenMeow(0.26, 1.0, 0.44);
   }
 
   collectFish() {
