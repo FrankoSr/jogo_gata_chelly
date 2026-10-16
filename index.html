@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Super Chelly: O Resgate dos Filhotes 🐾</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game-wrapper">
+    <!-- Top HUD -->
+    <header id="hud">
+      <div class="hud-group">
+        <div class="hud-badge chelly-badge">
+          <span class="badge-icon">🐱</span>
+          <span id="hud-lives">❤️❤️❤️❤️❤️</span>
+        </div>
+        <div class="hud-badge kittens-badge" title="Filhotes Resgatados na Fase">
+          <span class="badge-icon">🐾</span>
+          <span>Filhotes: <strong id="hud-kittens">0 / 2</strong></span>
+        </div>
+        <div class="hud-badge fish-badge" title="Peixinhos Dourados">
+          <span class="badge-icon">🐟</span>
+          <span id="hud-score">0</span>
+        </div>
+      </div>
+
+      <div class="hud-center">
+        <span id="hud-level-name">Fase 1: Jardim Ensolarado</span>
+      </div>
+
+      <div class="hud-group">
+        <div id="hud-gamepad" class="hud-badge gamepad-off" title="Conecte um controle USB/Bluetooth e aperte qualquer botão">
+          <span>🎮 Controle</span>
+        </div>
+        <button id="btn-sound" class="hud-btn" title="Ligar/Desligar Som">🔊 Som</button>
+        <button id="btn-restart" class="hud-btn" title="Reiniciar Fase">🔄 Reiniciar</button>
+        <button id="btn-help" class="hud-btn" title="Como Jogar">❓ Controles</button>
+      </div>
+    </header>
+
+    <!-- Main Game Canvas -->
+    <div id="canvas-container">
+      <canvas id="gameCanvas" width="1024" height="576"></canvas>
+
+      <!-- Boss Health Bar Overlay -->
+      <div id="boss-hud" class="hidden">
+        <div class="boss-title">🐕‍🦺 Chefão: Barão Dobermann</div>
+        <div class="boss-bar-bg">
+          <div id="boss-bar-fill"></div>
+        </div>
+      </div>
+
+      <!-- Start / Menu Overlay -->
+      <div id="overlay-screen" class="overlay">
+        <div class="modal-card">
+          <div class="modal-mascot" id="modal-icon">🐱🧶🐕</div>
+          <canvas id="victoryCanvas" width="480" height="200" class="victory-canvas hidden"></canvas>
+          <h1 id="modal-title">Super Chelly: O Resgate dos Filhotes!</h1>
+          <p id="modal-subtitle">
+            O travesso <strong>Barão Dobermann</strong> e sua gangue de animais prenderam os filhotinhos da gata <strong>Chelly</strong>!<br/>
+            Corra, pule nas plataformas e lance <strong>Novelos de Lã Coloridos</strong> para embrulhar os vilões e libertar todos os gatinhos!
+          </p>
+
+          <div class="controls-grid">
+            <div class="control-item">
+              <span class="key-pill">⬅️ ➡️</span> <span class="key-pill">A / D</span> <span class="pad-pill">🎮 Analógico / D-Pad</span>
+              <p>Andar</p>
+            </div>
+            <div class="control-item">
+              <span class="key-pill">Espaço / W</span> <span class="pad-pill">🎮 Botão A / ✕</span>
+              <p>Pular / Pulo Duplo</p>
+            </div>
+            <div class="control-item">
+              <span class="key-pill">Z / J / Enter</span> <span class="pad-pill">🎮 Botão X / ⬜ / RT</span>
+              <p>Lançar Novelo de Lã 🧶</p>
+            </div>
+            <div class="control-item">
+              <span class="key-pill">X / Shift</span> <span class="pad-pill">🎮 Botão B / ◯ / RB</span>
+              <p>Ataque de Garras 🐾</p>
+            </div>
+          </div>
+
+          <div class="villains-preview">
+            <span>🐶 Bulldog Rufus</span>
+            <span>🦝 Guaxinim Zeca</span>
+            <span>🐸 Sapo Fred</span>
+            <span>🐦 Corvo Bico</span>
+            <span>🐕 Barão Dobermann</span>
+          </div>
+
+          <button id="btn-start" class="primary-btn">🐾 Começar Aventura!</button>
+        </div>
+      </div>
+
+      <!-- Touch Controls for Kids / Tablets -->
+      <div id="touch-controls">
+        <div class="touch-dpad">
+          <button id="touch-left" class="touch-btn">⬅️</button>
+          <button id="touch-right" class="touch-btn">➡️</button>
+        </div>
+        <div class="touch-actions">
+          <button id="touch-yarn" class="touch-btn yarn-btn">🧶</button>
+          <button id="touch-dash" class="touch-btn dash-btn">🐾</button>
+          <button id="touch-jump" class="touch-btn jump-btn">⬆️</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
