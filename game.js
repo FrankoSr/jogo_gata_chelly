@@ -163,7 +163,9 @@ class SoundSystem {
 
   toggle() {
     this.enabled = !this.enabled;
-    btnSound.textContent = this.enabled ? '🔊 Som' : '🔇 Mudo';
+    btnSound.innerHTML = this.enabled
+      ? '🔊 <span class="btn-label">Som</span>'
+      : '🔇 <span class="btn-label">Mudo</span>';
     if (!this.enabled) {
       this.stopMusic();
     } else {
@@ -1955,7 +1957,25 @@ class Game {
     this.skyCanvas = document.createElement('canvas');
     this.skyCanvas.width = canvas.width;
     this.skyCanvas.height = canvas.height;
-    this.bakeSky(LEVELS[0]);
+    this.resizeCanvas();
+  }
+
+  resizeCanvas() {
+    const container = document.getElementById('canvas-container');
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      const targetHeight = 576;
+      const ratio = rect.width / rect.height;
+      const targetWidth = Math.max(400, Math.min(1180, Math.round(targetHeight * ratio)));
+      if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        this.skyCanvas.width = targetWidth;
+        this.skyCanvas.height = targetHeight;
+      }
+    }
+    this.bakeSky(LEVELS[this.levelIndex]);
   }
 
   bakeSky(lvl) {
@@ -1966,10 +1986,10 @@ class Game {
     sctx.fillStyle = grad;
     sctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Sol ou Lua pré-renderizado no céu
+    // Sol ou Lua pré-renderizado no céu (posicionado proporcionalmente à largura)
     sctx.fillStyle = this.levelIndex === 2 ? '#f1faee' : '#ffd166';
     sctx.beginPath();
-    sctx.arc(880, 95, 42, 0, Math.PI * 2);
+    sctx.arc(Math.max(120, canvas.width - 110), 90, 38, 0, Math.PI * 2);
     sctx.fill();
   }
 
@@ -2774,6 +2794,28 @@ btnHelp.addEventListener('click', () => {
     game.state = 'playing';
     overlayScreen.classList.add('hidden');
   }
+});
+
+const btnFullscreen = document.getElementById('btn-fullscreen');
+if (btnFullscreen) {
+  btnFullscreen.addEventListener('click', () => {
+    const elem = document.documentElement;
+    if (!document.fullscreenElement) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(() => {});
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      }
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    }
+    setTimeout(() => game.resizeCanvas(), 200);
+  });
+}
+
+window.addEventListener('resize', () => game.resizeCanvas());
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => game.resizeCanvas(), 150);
 });
 
 let lastTime = performance.now();
